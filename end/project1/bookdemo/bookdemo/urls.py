@@ -19,4 +19,5 @@ from django.urls import path
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
-# 项目的所有地址配置文件
+# 项目的所有路由地址配置文件
+# admin 路由是django自带的后台管理路由
