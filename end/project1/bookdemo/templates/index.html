@@ -16,10 +16,16 @@
 
             <ul>
                 {% for book in books %}
-                    <a href="/booktest/detail/{{book.id}}/"><li>{{book.id}} -- {{book.title}} -- {{book.price}} --
-                    {{book.pub_date}}</li></a>
+                    {# django模板注释 #}
+                    {# <a href="/detail/{{book.id}}/"><li>{{book.id}} -- {{book.title}} -- {{book.price}} -- {{book.pub_date}}</li></a> #}
+                <li>
+                    <a href="{% url 'booktest:detail' book.id %}">{{book.id}} -- {{book.title}} -- {{book.price}} -- {{book.pub_date}}</a>
+                    <a href="{% url 'booktest:deletebook' book.id %}">删除</a>
+                </li>
                 {% endfor %}
             </ul>
+
+            {# <h2><a href="{% url 'booktest:abdbook'%}">添加书籍</a></h2> #}
 
         </div>
     </div>

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect,reverse
 from django.template import loader
 from .models import Book, Hero
 
@@ -22,7 +22,8 @@ def index(request):
     # 3.将渲染的结果使用httpresponse返回
     # return HttpResponse(result)
 
-    return render(request,'index.html',{'books':books})
+    return render(request, 'index.html', {'books': books})
+
 
 def detail(request, bookid):
     # return HttpResponse("这里是详情页"+bookid)
@@ -32,12 +33,51 @@ def detail(request, bookid):
     # result = template.render(context)
     # return HttpResponse(result)
 
-    return render(request,'detail.html',{'book':book})
+    return render(request, 'detail.html', {'book': book})
+
+
+def deletebook(request,bookid):
+    book = Book.objects.get(id=bookid)
+    book.delete()
+    # 删除一本书之后仍然回到列表页
+    # return HttpResponseRedirect(redirect_to='/booktest/'+bookid)
+    return redirect(to="/")
+
+def edithere(request,heroid):
+    hero=Hero.objects.get(id=heroid)
+    #使用get方法进入英雄的编辑页面
+    if request.method == "GET":
+        return render(request, 'edithere.html',{"hero":hero})
+    elif request.method == "POST":
+        hero.name = request.POST.get("heroname")
+        hero.content = request.POST.get("herocontent")
+        hero.gender = request.POST.get("sex")
+        hero.save()
+        url = reverse("booktest:detail", args=(hero.book.id,))
+        return redirect(to=url)
+def deletehero(request,heroid):
+    hero=Hero.objects.get(id=heroid)
+    #一定先获取在删除
+    bookid=hero.book.id
+    hero.delete()
+    url=reverse("booktest:detail",args=(bookid,))
+    return redirect(to=url)
+
+def addhero(request,bookid):
+    #视图函数中可以同时存在get与post请求  默认get
+    if request.method=="GET":
+        return render(request,'addhero.html')
+    elif request.method=="POST":
+        hero=Hero()
+        hero.name = request.POST.get("heroname")
+        hero.content = request.POST.get("herocontent")
+        hero.gender = request.POST.get("sex")
+        hero.book = Book.objects.get(id=bookid)
+        hero.save()
+        url=reverse("booktest:detail",args=(bookid,))
+        return redirect(to=url)
 
 def about(request):
     return HttpResponse("这里是关于页面")
-
-
-
 
 # 使用django模板
