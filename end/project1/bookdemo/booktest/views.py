@@ -77,6 +77,32 @@ def addhero(request,bookid):
         url=reverse("booktest:detail",args=(bookid,))
         return redirect(to=url)
 
+def addbook(request):
+    #视图函数中可以同时存在get与post请求  默认get
+    if request.method=="GET":
+        return render(request,'addbook.html')
+    elif request.method=="POST":
+        book=Book()
+        book.title = request.POST.get("booktitle")
+        book.price = request.POST.get("bookprice")
+        book.pub_date = request.POST.get("bookpub_date")
+        book.save()
+        url=reverse("booktest:index")
+        return redirect(to=url)
+
+def editbook(request,bookid):
+    book=Book.objects.get(id=bookid)
+    #使用get方法进入书籍的编辑页面
+    if request.method == "GET":
+        return render(request, 'editbook.html',{"book":book})
+    elif request.method == "POST":
+        book.title = request.POST.get("booktitle")
+        book.price = request.POST.get("bookprice")
+        book.pub_date = request.POST.get("bookpub_date")
+        book.save()
+        url = reverse("booktest:index")
+        return redirect(to=url)
+
 def about(request):
     return HttpResponse("这里是关于页面")
 
