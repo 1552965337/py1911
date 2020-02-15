@@ -56,7 +56,9 @@ def edithere(request,heroid):
         url = reverse("booktest:detail", args=(hero.book.id,))
         return redirect(to=url)
 def deletehero(request,heroid):
+    #惰性查询 能不操作数据库就不操作数据库  不得已才操作数据库  Hero.objects.get(id=heroid)  并没有操作数据库
     hero=Hero.objects.get(id=heroid)
+    #如果访问hero中的对象  不操作数据库得不到数据  此时才真正操作数据库
     #一定先获取在删除
     bookid=hero.book.id
     hero.delete()
