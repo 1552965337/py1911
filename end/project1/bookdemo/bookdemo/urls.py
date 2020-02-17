@@ -25,7 +25,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # 1.使用path将booktest的路由进行包含
-    path('',include('booktest.urls',namespace='booktest'))
+    path('polls/',include('polls.urls',namespace='polls')),
+    path('', include('booktest.urls', namespace='booktest')),
 ]
 # 项目的所有路由地址配置文件
 # admin 路由是django自带的后台管理路由
