@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
+#引入媒体资源
+from django.views.static import serve
+
 
 # 路由 网址 每一个网址均需要绑定视图函数  视图函数给与页面返回
 # 每一个路由都需要和视图函数绑定
@@ -26,7 +29,9 @@ urlpatterns = [
 
     # 1.使用path将booktest的路由进行包含
     path('polls/',include('polls.urls',namespace='polls')),
+    path('download/',include('download.urls',namespace='download')),
     path('', include('booktest.urls', namespace='booktest')),
+
 ]
 # 项目的所有路由地址配置文件
 # admin 路由是django自带的后台管理路由

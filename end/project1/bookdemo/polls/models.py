@@ -1,6 +1,11 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
+
+
+class User(AbstractUser):
+    telephone=models.CharField(max_length=11,verbose_name="手机号")
+    questions=models.ManyToManyField('Question')
 
 class Question(models.Model):
     """
@@ -16,7 +21,6 @@ class Question(models.Model):
         verbose_name = "投票表"
         verbose_name_plural = verbose_name
         ordering = ["-create_time"]
-
 
 
 class Choices(models.Model):

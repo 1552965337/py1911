@@ -26,8 +26,8 @@ SECRET_KEY = 'iji)uyrh60*t-axs96q4s7pxjkxj$2hfzo14p@1w#@8zhd0#lr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+#如果DEBUG设置成Flase   ALLOWED_HOSTS代表哪些域名IP电脑可以访问服务器
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -41,13 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'booktest',
     'polls',
+    'download',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    #csrf 验证需要先关闭  否则443 forbidden
+
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -127,3 +130,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # 需要配置静态文件所处位置
 STATICFILES_DIRS  = [os.path.join(BASE_DIR,'static')]
+
+
+AUTH_USER_MODEL='polls.User'
