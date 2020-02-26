@@ -1,4 +1,4 @@
-"""blog URL Configuration
+"""drfend URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.0/topics/http/urls/
@@ -15,17 +15,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from django.conf.urls import url
-from .settings import MEDIA_ROOT
-from django.views.static import serve
+from shop.views import *
 
+#引入DRF自带的路由类
+from rest_framework import routers
+router=routers.DefaultRouter()
+
+#可以通过router默认路由注册资源
+router.register('categorys',CategoryViewSets)
+router.register('goods',CoodViewSets)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ueditor/',include('DjangoUeditor.urls')),
-
-    url(r'^search/', include('haystack.urls')),
-    url(r'^media/(?P<path>.*)$',serve, {'document_root': MEDIA_ROOT}),
-    path('', include('blogapp.urls', namespace='blogapp')),
-
+    path('api/v1/',include(router.urls)),
+    #配置RestFulApp
+    #为了在DRF路由调试能够使用用户相关功能需要引入一下路由
+    path('',include('rest_framework.urls'))
 ]
