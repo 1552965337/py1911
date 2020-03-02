@@ -4,7 +4,7 @@ from .serializers import *
 from django.http import HttpResponse
 
 # 通过api_view装饰器可以将基于函数的视图转换成APIVIew基于类的视图
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,action
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -146,8 +146,23 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CategorySerializers
 
 class CategoryViewSets2(viewsets.ModelViewSet):
+    """
+    如果返回的内容是模型列表  用queryset方便
+    如果需要处理  可以使用basename结合get_queryset
+    """
     queryset = Category.objects.all()
-    serializer_class = CategorySerializers
+    # def get_queryset(self):
+    #     return Category.objects.all()[:3]
+
+    # serializer_class = CategorySerializers
+    def get_serializer_class(self):
+        return CategorySerializers
+
+    @action(methods=['GET'],detail=False)
+    def getlatestcategory(self,request):
+        seria=CategorySerializers(instance=Category.objects.all()[:int(request.query_params.get("num"))],many=True)
+        return Response(data=seria.data,status=status.HTTP_200_OK)
+
 
 
 class CategoryViewSets(viewsets.ModelViewSet):
@@ -173,3 +188,15 @@ class CoodViewSets(viewsets.ModelViewSet):
 class CoodImgsViewSets(viewsets.ModelViewSet):
     queryset = GoodImgs.objects.all()
     serializer_class = CoodImgsSerializers
+
+
+class UserViewSets(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializers
+    @action(methods=["POST"],detail=False)
+    def regist(self,request):
+        seria=UserRegistSerializer(data=request.data)
+        seria.is_valid(raise_exception=True)
+        seria.save()
+        return Response("创建成功")
+

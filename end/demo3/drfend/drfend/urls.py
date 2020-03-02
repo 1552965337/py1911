@@ -32,6 +32,7 @@ router = routers.DefaultRouter()
 router.register('categorys', CategoryViewSets2)
 router.register('goods', CoodViewSets)
 router.register('goodimgs', CoodImgsViewSets)
+router.register('users', UserViewSets)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -49,8 +50,8 @@ urlpatterns = [
     # url(r'^categorylist/$', CategoryListView.as_view(), name="categorylist"),
     # url(r'^categorydetail/(?P<pk>\d+)/$', CategoryDetailView.as_view(), name="categorydetail"),
 
-    # url(r'^categorys/$', CategoryViewSets2.as_view({'get':'list','post':'create'})),
-    # url(r'^categorys/(?P<pk>\d+)/$', CategoryViewSets2.as_view({'get':'retrieve','put':'update','patch':'update','delete':'destroy'})),
+    url(r'^categorys/$', CategoryViewSets2.as_view({'get':'list','post':'create'})),
+    url(r'^categorys/(?P<pk>\d+)/$', CategoryViewSets2.as_view({'get':'retrieve','put':'update','patch':'update','delete':'destroy'})),
 
     # API文档地址
     path('api/v1/docs/', include_docs_urls(title='RestFulAPI', description='RestFulAPI v1')),
