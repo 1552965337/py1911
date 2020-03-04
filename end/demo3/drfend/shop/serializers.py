@@ -161,28 +161,35 @@ class CategorySerializers1(serializers.ModelSerializer):
 class UserSerializers(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
+        # fields = '__all__'
+        exclude = ["user_permissions", "groups"]
 
-    # def validate(self, attrs):
-    #     return attrs
+    def validate(self, attrs):
+        from django.contrib.auth import hashers
+        if attrs.get("password"):
+            attrs["password"] = hashers.make_password(attrs["password"])
+        return attrs
+
 
 class UserRegistSerializer(serializers.Serializer):
-    username=serializers.CharField(max_length=10,min_length=3)
-    password=serializers.CharField(max_length=10,min_length=3)
-    password2=serializers.CharField(max_length=10,min_length=3)
+    username = serializers.CharField(max_length=10, min_length=3, error_messages={
+        "required": "用户名必填"
+    })
+    password = serializers.CharField(max_length=10, min_length=3, write_only=True)
+    password2 = serializers.CharField(max_length=10, min_length=3, write_only=True)
 
-    # def validate_password(self, data):
-    #     if data != self.password:
-    #         raise serializers.ValidationError("密码不一致")
-    #     else:
-    #         return data
-
-    def validate(self,attrs):
-        if attrs['password']!=attrs['password2']:
+    def validate_password2(self, data):
+        if data != self.initial_data["password"]:
             raise serializers.ValidationError("密码不一致")
-        del attrs['password2']
-        return attrs
+        else:
+            return data
+
     def create(self, validated_data):
-        return User.objects.create_user(username=validated_data.get('username'),email=validated_data.get('email'),
+        return User.objects.create_user(username=validated_data.get('username'), email=validated_data.get('email'),
                                         password=validated_data.get('password'))
 
+
+class OrderSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = '__all__'

@@ -4,7 +4,7 @@ from .serializers import *
 from django.http import HttpResponse
 
 # 通过api_view装饰器可以将基于函数的视图转换成APIVIew基于类的视图
-from rest_framework.decorators import api_view,action
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
@@ -13,7 +13,17 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework import mixins
 
-#升级版
+from rest_framework import permissions
+from . import permissions as mypermissions
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
+from .throttling import *
+from .pagination import Mypagrnation
+# 引入django过滤类
+from rest_framework import filters
+from django_filters.rest_framework import DjangoFilterBackend
+
+
+# 升级版
 class CategoryListView2(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
     queryset = Category.objects.all()
     serializer_class = CategorySerializers
@@ -23,7 +33,10 @@ class CategoryListView2(generics.GenericAPIView, mixins.ListModelMixin, mixins.C
 
     def post(self, request):
         return self.create(request)
-class CategoryDetailView2(generics.GenericAPIView, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+
+
+class CategoryDetailView2(generics.GenericAPIView, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+                          mixins.DestroyModelMixin):
     queryset = Category.objects.all()
     serializer_class = CategorySerializers
 
@@ -136,14 +149,16 @@ def categoryDetail(request, cid):
         return HttpResponse("当前路由不允许" + request.method + "操作")
 
 
-#顶级版
+# 顶级版
 class CategoryListView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializers
 
+
 class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializers
+
 
 class CategoryViewSets2(viewsets.ModelViewSet):
     """
@@ -151,6 +166,7 @@ class CategoryViewSets2(viewsets.ModelViewSet):
     如果需要处理  可以使用basename结合get_queryset
     """
     queryset = Category.objects.all()
+
     # def get_queryset(self):
     #     return Category.objects.all()[:3]
 
@@ -158,11 +174,10 @@ class CategoryViewSets2(viewsets.ModelViewSet):
     def get_serializer_class(self):
         return CategorySerializers
 
-    @action(methods=['GET'],detail=False)
-    def getlatestcategory(self,request):
-        seria=CategorySerializers(instance=Category.objects.all()[:int(request.query_params.get("num"))],many=True)
-        return Response(data=seria.data,status=status.HTTP_200_OK)
-
+    @action(methods=['GET'], detail=False)
+    def getlatestcategory(self, request):
+        seria = CategorySerializers(instance=Category.objects.all()[:int(request.query_params.get("num"))], many=True)
+        return Response(data=seria.data, status=status.HTTP_200_OK)
 
 
 class CategoryViewSets(viewsets.ModelViewSet):
@@ -175,14 +190,36 @@ class CategoryViewSets(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     # 1.通过属性指明
     serializer_class = CategorySerializers
+
     # 2.通过方法指明
     # def get_serializer_class(self):
     #     return CategorySerializers
+
+    # 用户为登录不显示 分类列表  优先级别高于全局配置
+    # permission_classes = [permissions.IsAdminUser]
+
+    # 超级管理员可以创建分类  普通用户可以查看分类
+    def get_permissions(self):
+        if self.action == "create" or self.action == "put" or self.action == "partial_update" or self.action == "destroy":
+            return [permissions.IsAdminUser()]
+        else:
+            return []
+
+    # throttle_classes = [AnonRateThrottle,UserRateThrottle]
+    throttle_classes = [MyAnon, MyUser]
+    pagination_class = Mypagrnation
+
+    # 局部过滤配置  高于全局过滤配置
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filterset_fields = ["name"]
+    search_fields = ['name']
+    ordering_fields = ['id']
 
 
 class CoodViewSets(viewsets.ModelViewSet):
     queryset = Good.objects.all()
     serializer_class = GoodSerializers
+    filterset_fields = ["name"]
 
 
 class CoodImgsViewSets(viewsets.ModelViewSet):
@@ -190,13 +227,62 @@ class CoodImgsViewSets(viewsets.ModelViewSet):
     serializer_class = CoodImgsSerializers
 
 
-class UserViewSets(viewsets.ModelViewSet):
+class UserViewSets1(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin):
+    """
+    声明用户资源类  获取个人信息  更新个人信息  删除账户
+    扩展出action路由  用户操作  创建账户
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializers
-    @action(methods=["POST"],detail=False)
-    def regist(self,request):
-        seria=UserRegistSerializer(data=request.data)
+
+    # 使用action扩展资源http方法
+    @action(methods=["POST"], detail=False)
+    def regist(self, request):
+        seria = UserRegistSerializer(data=request.data)
         seria.is_valid(raise_exception=True)
         seria.save()
-        return Response("创建成功")
+        return Response(seria.data, status=status.HTTP_201_CREATED)
 
+
+class UserViewSets(viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
+                   mixins.DestroyModelMixin):
+    """
+    声明用户资源类  获取个人信息  更新个人信息  删除账户
+    扩展出action路由  用户操作  创建账户
+    """
+    queryset = User.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == "create":
+            return UserRegistSerializer
+        return UserSerializers
+
+
+class OrderViewSets(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializers
+
+    # permission_classes = [permissions.OrderPermissions]
+
+    def get_permissions(self):
+        """
+        超级管理员只可以展示所有订单
+        普通用户  可以创建修改订单  不可以操作其他用户的订单
+        :return:
+        """
+        if self.action == "create":
+            return [permissions.IsAuthenticated()]
+        elif self.action == "update" or self.action == "partial_update" or self.action == "retrieve" or self.action == "destroy":
+            return [mypermissions.OrderPermissions()]
+        else:
+            return [permissions.IsAdminUser()]
+
+# http方法                          混合类关键字                   action关键字
+# GET列表                           List                          get
+# POST创建对象                       Create                       create
+# GET 单个对象                       Retrieve                     retrieve
+# PUT 修改对象提供全属性              Update                       update
+# PATCH 修改对象提供部分属性          Update                       partial_update
+# DELETE 删除对象                    Destroy                      destroy
