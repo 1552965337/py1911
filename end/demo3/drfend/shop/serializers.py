@@ -4,38 +4,6 @@
 from rest_framework import serializers
 from .models import *
 
-
-class CategorySerializers(serializers.Serializer):
-    """
-    序列化类   决定了模型序列化细节
-    """
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(max_length=10, min_length=3, error_messages={
-        "max_length": "最多10个字",
-        "min_length": "最少3个字"
-    })
-
-    def create(self, validated_data):
-        # 通过重写create方法  来定义模型创建方式
-        print("重写创建方法", validated_data)
-        instace = Category.objects.create(**validated_data)
-        print("创建模型实例", instace)
-        return instace
-
-    def update(self, instance, validated_data):
-        """
-        通过重写update  来定义模型的更新方法
-        :param instance: 改之前的实例
-        :param validated_data: 更改参数
-        :return: 返回的新实例
-        """
-        print("重写更新方法", validated_data, instance.name)
-        instance.name = validated_data.get("name", instance.name)
-        print(instance.name)
-        instance.save()
-        return instance
-
-
 class CoodImgsSerializers(serializers.Serializer):
     img = serializers.ImageField()
     good = serializers.CharField(source='good.name')
@@ -66,7 +34,7 @@ class GoodSerializers(serializers.Serializer):
         "max_length": "最多20个字",
         "min_length": "最少2个字"
     })
-    category = CategorySerializers(label="分类")
+    # category = CategorySerializers(label="分类")
     imgs = CoodImgsSerializers(label="图片", many=True, read_only=True)
 
     def validate_category(self, category):
@@ -101,6 +69,40 @@ class GoodSerializers(serializers.Serializer):
         instance.category = validated_data.get("category", instance.category)
         instance.save()
         return instance
+
+
+
+class CategorySerializers(serializers.Serializer):
+    """
+    序列化类   决定了模型序列化细节
+    """
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField(max_length=10, min_length=3, error_messages={
+        "max_length": "最多10个字",
+        "min_length": "最少3个字"
+    })
+    goods=GoodSerializers(many=True,read_only=True)
+
+    def create(self, validated_data):
+        # 通过重写create方法  来定义模型创建方式
+        print("重写创建方法", validated_data)
+        instace = Category.objects.create(**validated_data)
+        print("创建模型实例", instace)
+        return instace
+
+    def update(self, instance, validated_data):
+        """
+        通过重写update  来定义模型的更新方法
+        :param instance: 改之前的实例
+        :param validated_data: 更改参数
+        :return: 返回的新实例
+        """
+        print("重写更新方法", validated_data, instance.name)
+        instance.name = validated_data.get("name", instance.name)
+        print(instance.name)
+        instance.save()
+        return instance
+
 
 
 class GoodSerializers1(serializers.ModelSerializer):
