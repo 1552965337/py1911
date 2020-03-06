@@ -161,12 +161,14 @@ class CategorySerializers1(serializers.ModelSerializer):
 
 
 class UserSerializers(serializers.ModelSerializer):
+    password=serializers.CharField(write_only=True)
     class Meta:
         model = User
         # fields = '__all__'
         exclude = ["user_permissions", "groups"]
 
     def validate(self, attrs):
+        print("原生创建",attrs)
         from django.contrib.auth import hashers
         if attrs.get("password"):
             attrs["password"] = hashers.make_password(attrs["password"])

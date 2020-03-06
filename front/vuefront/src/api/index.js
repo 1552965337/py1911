@@ -1,5 +1,4 @@
 import jsCookie from 'js-cookie'
-
 import axios from "axios"
 
 axios.defaults.baseURL = 'http://127.0.0.1:8000';
@@ -33,6 +32,8 @@ axios.interceptors.response.use(function (response) {
     	window.location.href="#/login/";
     	jsCookie.remove("access");
     	jsCookie.remove("refresh");
+    	jsCookie.remove("username");
+    	jsCookie.remove("userinfo");
     }
     
     return Promise.reject(error);
@@ -61,5 +62,18 @@ export const modifyCategory=(param)=>{
 
 export const getToken=(param)=>{
 	return axios.post("/obtaintoken/",param)
+}
+
+export const getUserinfo=(param)=>{
+	return axios.get("/getuserinfo/",param)
+}
+
+export const regist=(param)=>{
+	return axios.post("/api/v1/users/",param)
+}
+
+export const modifyUserInfo=(param)=>{
+	let id=param.userinfo.id
+	return axios.patch(`/api/v1/users/${id}/`,param.userinfo)
 }
 

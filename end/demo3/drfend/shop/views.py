@@ -23,6 +23,15 @@ from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 
+from rest_framework_simplejwt.authentication import JWTAuthentication
+
+@api_view(["GET"])
+def getuserinfo(request):
+    user=JWTAuthentication().authenticate(request)
+    seria=UserSerializers(instance=user[0])
+    return Response(seria.data,status=status.HTTP_200_OK)
+
+
 # 升级版
 class CategoryListView2(generics.GenericAPIView, mixins.ListModelMixin, mixins.CreateModelMixin):
     queryset = Category.objects.all()

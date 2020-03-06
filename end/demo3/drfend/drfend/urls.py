@@ -39,6 +39,7 @@ router.register('goodimgs', CoodImgsViewSets)
 router.register('users', UserViewSets)
 router.register('orders', OrderViewSets)
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     url('media/(?P<path>.*)', serve, {'document_root': MEDIA_ROOT}),
@@ -62,6 +63,7 @@ urlpatterns = [
     #先通过用户名密码 得到Token  VUE将refresh以及access保存 通过access请求服务器 通过refresh获取新的access
     url(r'^obtaintoken/$',token_obtain_pair,name="login"),
     url(r'^refresh/$',token_refresh,name="refresh"),
+    url(r'^getuserinfo/$',getuserinfo),
 
 
     # API文档地址

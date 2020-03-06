@@ -3,6 +3,9 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Category from '../views/Category.vue'
 import Login from '../views/Login.vue'
+import Regist from '../views/Regist.vue'
+import UserCenter from '../views/UserCenter.vue'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -10,6 +13,16 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
+  },
+   {
+    path: '/regist/',
+    name: 'Regist',
+    component: Regist
+  },
+  {
+    path: '/usercenter/',
+    name: 'UserCenter',
+    component: UserCenter
   },
   {
     path: '/categorys/:id/',
