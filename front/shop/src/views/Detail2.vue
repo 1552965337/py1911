@@ -69,7 +69,6 @@
 </template>
 
 <script>
-//	import {dictA} from '../data.js'
 	export default {
 		data(){
 			return{
@@ -109,8 +108,7 @@
 		},
 		created(){
 			
-			this.requestProduct();
-//			this.requestCategory();
+			this.requestGood();
 		},
 	  methods: {
 		  // 点击选择地址
@@ -143,26 +141,19 @@
 		  		this.$toast("加入成功");
 		  		this.$store.commit("addGood",{id:this.$route.params.id,num:this.buyNum,data:this.data})
 		  	},
-		requestProduct(){
-			this.$api.getProductDetail({
-				id:this.$route.params.id
-			}).then(res=>{
-				console.log("某个产品",res)
-				this.data=res.data
+		requestGood(){
+			this.$api.getGoodList().then(res=>{
+				console.log("获取good成功",res)
+				res.data.forEach(item=>{
+					if(item.name==this.$route.params.id){
+						this.data=item
+					}
+				})
 			}).catch(err=>{
-				console.log("获取某个产品失败",err)
+				console.log("获取good失败",err)
 			})
+		
 		},
-//		requestCategory(){
-//			this.$api.getCategoryDetail({
-//				id:this.$route.params.id
-//			}).then(res=>{
-//				console.log("某个产品",res)
-//				this.data=res.data
-//			}).catch(err=>{
-//				console.log("获取某个产品失败",err)
-//			})
-//		},
 	    onClickLeft(){
 	      this.$router.go(-1)
 	    },

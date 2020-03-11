@@ -41,6 +41,7 @@
 				this.$api.getProduct().then(res=>{
 					console.log("首页产品",res)
 					this.dictB=res.data
+					
 				}).catch(err=>{
 					console.log("错误",err)
 				})

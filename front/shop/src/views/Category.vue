@@ -14,19 +14,19 @@
 		<div class="main">
 			<div class="left" >
 				<van-sidebar @change="onChange" v-model="activeKey">
-				  <van-sidebar-item v-for="(item,index) in list" :key="index" :title="item" />
+				  <van-sidebar-item v-for="(item,index) in list" :key="index" :title="item.name"/>
 				</van-sidebar>
 			</div>
 			<div class="right" ref="right">
-				<div  v-for="(item1,index) in dict[activeKey]" @click="det1(item1.ItemCode)">
+				<div  v-for="(item1,index) in list[activeKey].goods" @click="det1(item1.name)">
 					<van-card
-					  :num="item1.Sales"
+					  :num="item1.num"
 					  tag="特价"
-					  :price="item1.Price"
-					  :desc="item1.Instro"
-					  :title="item1.Cpmc"
-					  :thumb=item1.img
-					  :origin-price="item1.LinePrice"
+					  :price="item1.price"
+					  :desc="item1.desc"
+					  :title="item1.name"
+					  :thumb=item1.imgs[0].img
+					  :origin-price="item1.historyprice"
 					/>
 					<van-divider :style="{borderColor: '#1989fa', padding: '0 16px' }"/>
 				</div>
@@ -40,23 +40,20 @@
 </template>
 
 <script>
-	import {dictC} from '../data.js'
 	export default{
 		data(){
 			return{
-				img:null,
-				dict:null,
 				activeKey:0,
-				list:['鲜花','永生花','蛋糕','特色礼品','绿植花卉'],
+				list:null,
 			}
 		},
 		created(){
-			this.dict=dictC,
-			this.activeKey=this.$route.params.id
+			this.activeKey=this.$route.params.id;
+			this.requestCatory();
 		},
 		methods:{
 			det1(code){
-				this.$router.push("/detail/"+code)
+				this.$router.push("/detail2/"+code)
 				
 			},
 			
@@ -70,6 +67,16 @@
 			},
 			onClickRight() {
 			  this.$router.push("/search")
+			},
+			
+			requestCatory(){
+				this.$api.getCategory().then(res=>{
+					console.log("获取分类成功",res)
+					this.list=res.data
+					console.log(this.activeKey)
+				}).catch(err=>{
+					console.log("获取分类失败",err)
+				})
 			}
 		},
 		

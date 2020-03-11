@@ -5,6 +5,7 @@ import Cart from '../views/Cart.vue'
 import Mine from '../views/Mine.vue'
 import Category from '../views/Category.vue'
 import Detail from '../views/Detail.vue'
+import Detail2 from '../views/Detail2.vue'
 import Search from '../views/Search.vue'
 import Personal from '../views/Personal.vue'
 import My from '../views/My.vue'
@@ -26,6 +27,11 @@ const routes = [
     name: 'detail',
     component: Detail
   },
+   {
+    path: '/detail2/:id',
+    name: 'detail2',
+    component: Detail2
+	},
   {
     path: '/cart',
     name: 'cart',

@@ -75,7 +75,7 @@ class CategoryViewSets(viewsets.ModelViewSet):
 class CoodViewSets(viewsets.ModelViewSet):
     queryset = Good.objects.all()
     serializer_class = GoodSerializers
-    filterset_fields = ["name"]
+    # filterset_fields = ["name"]
 
 
 class CoodImgsViewSets(viewsets.ModelViewSet):

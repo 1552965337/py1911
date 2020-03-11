@@ -27,9 +27,11 @@ class GoodSerializers(serializers.Serializer):
         "max_length": "最多20个字",
         "min_length": "最少2个字"
     })
-    # category = CategorySerializers(label="分类")
+    desc=serializers.CharField()
+    price=serializers.FloatField()
+    historyprice=serializers.FloatField()
+    num=serializers.IntegerField()
     imgs = CoodImgsSerializers(label="图片", many=True, read_only=True)
-
     def validate_category(self, category):
         """
         处理category
