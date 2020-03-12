@@ -23,10 +23,10 @@
 		<div>
 			<van-card v-for="(item,index) in $store.getters.getGoodList "
 			  :num="item.num"
-			  :price="item.data.Price"
-			  :origin-price="item.data.LinePrice"
-			  :title="'商品名:  '+item.data.Cpmc"
-			  :thumb="item.data.img"
+			  :price="item.data.price"
+			  :origin-price="item.data.historyprice"
+			  :title="'商品名:  '+item.data.name"
+			  :thumb="item.data.imgs[0].img"
 			>
 			<van-stepper @change="change(index,item.num)" min="0" v-model="item.num"  slot="bottom"/>
 			<div slot="footer">
@@ -38,15 +38,15 @@
 		<div style="margin-left: 10px;"><p style="color: #F16969; font-size: 25px;">推荐</p></div>
 		<div class="recommend" style="text-align: center;">
 			<!-- <img src="img/13.png" alt="" style="width:95%;"> -->
-			<div class='recom1' v-for="item1 in hot" @click="det1(item1.ItemCode)" style="text-align: left;">
+			<div class='recom1' v-for="item1 in hot" @click="det1(item1.name)" style="text-align: left;">
 				<van-card
-				  :num="item1.Sales"
+				  :num="item1.num"
 				  tag="Hot"
-				  :price="item1.Price"
-				  :desc="item1.Instro"
-				  :title="item1.Cpmc"
-				  :thumb=item1.img
-				  :origin-price="item1.LinePrice"
+				  :price="item1.price"
+				  :desc="item1.desc"
+				  :title="item1.name"
+				  :thumb=item1.imgs[0].img
+				  :origin-price="item1.historyprice"
 				/>
 			</div>
 			<div style="margin-left: 65px;">
@@ -67,7 +67,7 @@
 </template>
 	
 <script>
-	import {dictA} from '../data.js'
+//	import {dictA} from '../data.js'
 	import Cookie from 'js-cookie'
 	export default{
 		
@@ -81,24 +81,29 @@
 			}
 		},
 		created() {
-			this.dict=dictA,
+			this.requestGoodList()
 			this.moneys();
 			this.disap();
-			this.hots();
 			if( Cookie.get("islog")){this.value=false;}
 		},
 		methods:{
+			requestGoodList(){
+				this.$api.getGoodList().then(res=>{
+					console.log("获取商品列表成功",res)
+					this.dict=res.data
+					// 推荐
+					for(let i=0;i<8;i++){
+					this.hot.push(this.dict[parseInt(Math.random()*this.dict.length)])
+				}
+					console.log(this.hot)
+				}).catch(err=>{
+					console.log("获取商品列表失败",err)
+				})
+			},
 			det1(index){
-				this.$router.push("/Detail/"+index)
+				this.$router.push("/Detail2/"+index)
 				},
 				
-			// 推荐
-			hots(){
-				for(let i=0;i<8;i++){
-					this.hot.push(this.dict[ parseInt(Math.random()*this.dict.length)])
-				}
-			},
-			
 			// 显示与消失
 			disap(){
 				if(this.$store.getters.getGoodList.length>0){
@@ -141,7 +146,7 @@
 			moneys(){
 				let qian=0;
 				this.$store.getters.getGoodList.forEach(item=>{
-					qian+=item.data.Price*item.num
+					qian+=item.data.price*item.num
 				})
 				this.money=qian*100
 			},

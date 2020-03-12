@@ -20,10 +20,10 @@
 		<div v-for="(item,index) in list">
 			<van-card 
 			  :num="item.num"
-			  :price="item.data.Price"
-			  :origin-price="item.data.LinePrice"
-			  :title="'商品名:  '+item.data.Cpmc"
-			  :thumb="item.data.img"
+			  :price="item.data.price"
+			  :origin-price="item.data.historyrice"
+			  :title="'商品名:  '+item.data.name"
+			  :thumb="item.data.imgs[0].img"
 			>
 			</van-card>
 		</div>

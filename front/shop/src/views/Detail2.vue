@@ -11,7 +11,7 @@
 			</van-sticky >
 		</div>
 		<div class="imb">
-			<img :src="data.img" alt=""/>
+			<img :src="data.imgs[0].img" alt=""/>
 		</div>
 		<div style="color:red;font-size: 27px;">{{data.name}}</div>
 		<div style="background-color: #F0C674;margin: 10px;">

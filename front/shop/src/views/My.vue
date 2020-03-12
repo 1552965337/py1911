@@ -20,10 +20,10 @@
 		<div v-for="(item,index) in list">
 			<van-card 
 			  :num="item.num"
-			  :price="item.data.Price"
-			  :origin-price="item.data.LinePrice"
-			  :title="'商品名:  '+item.data.Cpmc"
-			  :thumb="item.data.img"
+			  :price="item.data.price"
+			  :origin-price="item.data.historyprice"
+			  :title="'商品名:  '+item.data.name"
+			  :thumb="item.data.imgs[0].img"
 			>
 			<div slot="footer">
 			    <van-button size="mini" color="linear-gradient(to right, #4bb0ff, #6149f6)" @click="shou(item,index)">签收</van-button>
